@@ -3,7 +3,7 @@ import { MongoClient } from "mongodb";
 let db;
 
 export async function connectToMongo() {
-    const uri = process.env.MONGO_URI || 'mongodb://mongo:27017'; // Changed default to use 'mongo'
+    const uri = process.env.MONGO_URI || 'mongodb://localhost:27017'; //'localhost' when running locally, 'mongo' when using docker
     const client = new MongoClient(uri);
 
     try {
