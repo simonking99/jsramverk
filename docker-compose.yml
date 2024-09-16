@@ -1,0 +1,35 @@
+version: '3'
+services:
+  # Backend service
+  backend:
+    build: ./backend # Path to the backend directory
+    container_name: backend
+    ports:
+      - "3001:3001" # Expose backend API port
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017 # MongoDB URL
+    volumes:
+      - ./backend:/usr/src/app # Mount backend code
+    command: ["node", "app.mjs"]
+
+  # Frontend service
+  frontend:
+    build: ./client # Path to the frontend directory
+    container_name: frontend
+    ports:
+      - "3000:3000" # Expose frontend port
+    volumes:
+      - ./client:/usr/src/app # Mount frontend code
+    environment:
+      - REACT_APP_API_URL=http://localhost:3001 # API URL to communicate with the backend
+
+  # MongoDB service
+  mongo:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017" # Expose MongoDB port
+    volumes:
+      - ./data:/data/db # Mount MongoDB data
