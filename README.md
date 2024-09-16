@@ -1,13 +1,21 @@
-To run backend, client, and mongodb do as following: 
+Komma igång
+---------------
+Följ stegen nedan för att sätta upp och köra backend, klient och MongoDB-tjänsterna:
 
-Step 1
---------
-Install docker-desktop
+Steg 1 
+-------
+Se till att du har följande installerat:
+Installera Docker Desktop och säkerställ att det är igång på ditt system.
 
-Step 2
---------
-Make sure you have .env file in client folder with the PORT=3001
+Steg 2
+------
+Navigera till klientmappen och kontrollera att .env-filen finns med följande innehåll:
+PORT=3001
 
-Step 3
---------
-Run docker-compose -up -d in the root directory
+Steg 3
+-------
+Gå till projektets rotkatalog och kör kommandot docker-compose up -d för att bygga och starta tjänsterna i bakgrunden.
+
+Steg 4 
+------
+Testa klienten genom att köra localhost:3000 i webbläsaren
