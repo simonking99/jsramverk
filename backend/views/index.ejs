@@ -1,0 +1,9 @@
+<%- include('includes/header'); %>
+
+<h2>Dokument</h2>
+<% docs.forEach(function(doc){ %>
+    <h3><a href="/updateoneform/<%= doc.id %>"><%= doc.title %></a></h3>
+<% }); %>
+<h3><a href="/addoneform">Lägg till nytt Dokument</a></h3>
+
+<%- include('includes/footer'); %>

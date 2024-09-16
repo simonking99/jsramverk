@@ -1,0 +1,6 @@
+<%- include('includes/header'); %>
+    <h2>Dokument</h2>
+    <% docs.forEach(function(doc){ %>
+        <h3><a href="/alter/<%= doc.id %>" method="POST"><%= doc.title %></a></h3>
+    <% }); %>
+<%- include('includes/footer'); %>

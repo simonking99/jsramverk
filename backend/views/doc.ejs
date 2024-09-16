@@ -1,0 +1,12 @@
+<%- include('includes/header'); %>
+<h2>Dokument</h2>
+<form method="POST" action="/addone" class="new-doc">
+    <label for="title">Titel</label>
+    <input type="text" id="title" name="title" value="<%= doc ? doc.title : '' %>" />
+
+    <label for="content">Innehåll</label>
+    <textarea id="content" name="content"><%= doc ? doc.content : '' %></textarea>
+
+    <input type="submit" value="Lägg till" />
+</form>
+<%- include('includes/footer'); %>
