@@ -14,7 +14,7 @@ Skapa en .env-fil i projektets rotmapp:
 
 Vi la till följande rad i .env-filen för att definiera porten, 
 eftersom den var undefined när vi körde node app.mjs:
-    PORT=3000
+    PORT=3001
 
 Steg 3: Skapa databastabellen
 För att skapa tabellen documents i SQLite:
