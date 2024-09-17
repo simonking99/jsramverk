@@ -52,10 +52,9 @@ const DocumentList = () => {
           </li>
         ))}
       </ul>
-      <button onClick={handleNavigateToAdd} className="add-document-link">
+      <button onClick={handleNavigateToAdd} className="add-document-link" style={{ marginRight: '10px' }}>
         Add New Document
       </button>
-      <br />
       <button onClick={handleDeleteAll} className="delete-all-button">
         Delete All Documents
       </button>

@@ -24,8 +24,7 @@ const AddDocument = () => {
 
   return (
     <div>
-      <h2>Add Document</h2>
-      <form onSubmit={handleSubmit}>
+      <h2 style={{ textAlign: 'center' }}>Add Document</h2>      <form onSubmit={handleSubmit}>
         <div>
           <label>Title:</label>
           <input

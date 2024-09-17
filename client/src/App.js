@@ -1,19 +1,17 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AddDocument from './pages/AddDocument';
 import DocumentList from './pages/DocumentList';
-import UpdateDocument from './pages/UpdateDocument'; // Import the new component
+import UpdateDocument from './pages/UpdateDocument'; 
 
-
-import Header from './components/Headers'; // Import the Header component
-import Footer from './components/Footer'; // Import the Footer component
+import Header from './components/Headers'; 
+import Footer from './components/Footer'; 
 import './App.css';
 
 const App = () => {
   return (
     <BrowserRouter>
-      <div className="app-container">
+      <div className="app-container"> {/* Make sure this matches your CSS */}
         <Header />
         <main>
           <Routes>
