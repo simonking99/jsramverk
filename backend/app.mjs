@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import cors from 'cors';
 import { connectToMongo } from './data/db/database.mjs';
-import documents from "./docs.mjs";
+import documents from "./src/doc/docs.mjs";
 
 const app = express();
 const port = process.env.PORT || 3000;

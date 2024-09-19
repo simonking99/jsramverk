@@ -22,3 +22,9 @@ export function getDb() {
     }
     return db;
 }
+
+export async function connectToDb(uri) {
+    const client = new MongoClient(uri);
+    await client.connect();
+    db = client.db('test');
+}
