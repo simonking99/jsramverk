@@ -5,17 +5,25 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "nyc --reporter=html --reporter=text --reporter=clover mocha --timeout 10000 --require @babel/register 'test/**/*.{mjs,js}'",
+    "test": "nyc --reporter=html --reporter=text mocha --require @babel/register 'test/**/*.{mjs,js}' --exit",
     "clean": "rm -rf node_modules package-lock.json"
   },
   "nyc": {
-  "include": ["src/**/*.mjs", "test/**/*.mjs"],
-  "report-dir": "./coverage",
-  "reporter": ["html", "text"],
-  "require": ["@babel/register"],
-  "sourceMap": false,
-  "instrument": true
-} ,
+    "include": [
+      "./src/**/*.mjs",
+      "./test/**/*.mjs"
+    ],
+    "report-dir": "./coverage",
+    "reporter": [
+      "html",
+      "text"
+    ],
+    "require": [
+      "@babel/register"
+    ],
+    "sourceMap": true,
+    "instrument": true
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
