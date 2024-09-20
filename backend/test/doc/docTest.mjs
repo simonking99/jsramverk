@@ -15,7 +15,7 @@ describe('docs module', function() {
         client = new MongoClient(uri);
         await client.connect();
         await connectToDb(uri);
-        
+
     });
 
     after(async function() {
