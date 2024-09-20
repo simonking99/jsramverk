@@ -19,5 +19,3 @@ Gå till projektets rotkatalog och kör kommandot docker-compose up -d för att 
 Steg 4 
 ------
 Testa klienten genom att köra localhost:3000 i webbläsaren
-
-Test om ci startar

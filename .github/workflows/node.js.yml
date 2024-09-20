@@ -4,15 +4,14 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'jsramverk/backend/**'
+      - 'backend/**'  # Om backend-koden ligger direkt i backend/
   pull_request:
     branches: [ "main" ]
     paths:
-      - 'jsramverk/backend/**'
+      - 'backend/**'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -35,10 +34,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd jsramverk/backend
+        cd backend 
         npm install
 
     - name: Run tests
       run: |
-        cd jsramverk/backend
+        cd backend
         npm test
