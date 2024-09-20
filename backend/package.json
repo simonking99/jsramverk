@@ -3,20 +3,47 @@
   "version": "1.0.0",
   "description": "Starter project for DV1677 JSRamverk",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nyc --reporter=html --reporter=text mocha --require @babel/register 'test/**/*.{mjs,js}' --exit",
+    "clean": "rm -rf node_modules package-lock.json"
+  },
+  "nyc": {
+    "include": [
+      "./src/**/*.mjs",
+      "./test/**/*.mjs"
+    ],
+    "report-dir": "./coverage",
+    "reporter": [
+      "html",
+      "text"
+    ],
+    "require": [
+      "@babel/register"
+    ],
+    "sourceMap": true,
+    "instrument": true
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.4",
+    "@babel/register": "^7.24.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
     "mongodb": "^6.8.1",
+    "mongodb-memory-server": "^10.0.0",
     "morgan": "^1.10.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.7.3",
+    "nyc": "^15.1.0"
   }
 }
