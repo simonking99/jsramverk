@@ -54,9 +54,6 @@ const docs = {
         } catch (e) {
             console.error(e);
         }
-    },
-    add: function (a, b) {
-        return a + b;
     }
 };
 
