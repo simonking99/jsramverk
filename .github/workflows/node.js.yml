@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'backend/**'  # Om backend-koden ligger direkt i backend/
+      - 'backend/**'
   pull_request:
     branches: [ "main" ]
     paths:
@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x, 18.x, 20.x, 22.x]
+        node-version: [16.x, 18.x, 20.x]  # Ta bort 12.x och 14.x
         mongodb-version: ['4.2', '4.4', '5.0']
 
     steps:
@@ -28,9 +28,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Start MongoDB
-      uses: supercharge/mongodb-github-action@1.7.0
-      with:
-        mongodb-version: ${{ matrix.mongodb-version }}
+      uses: supercharge/mongodb-github-action@latest  # Använd senaste versionen
 
     - name: Install dependencies
       run: |
