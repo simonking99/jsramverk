@@ -10,10 +10,10 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application
+# Copy the rest of the application code
 COPY . .
 
-# Expose the port your frontend app runs on (default for React is 3000, adjust if needed)
+# Expose the port your frontend app runs on (default for React is 3000)
 EXPOSE 3000
 
 # Start the frontend application
