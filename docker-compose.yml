@@ -11,6 +11,7 @@ services:
       - MONGO_URI=mongodb://mongo:27017 # MongoDB URL
     volumes:
       - ./backend:/usr/src/app # Mount backend code
+      - /usr/src/app/node_modules # Do not overwrite node_modules inside the container
     command: ["node", "app.mjs"]
 
   # Frontend service
@@ -21,6 +22,7 @@ services:
       - "3000:3000" # Expose frontend port
     volumes:
       - ./client:/usr/src/app # Mount frontend code
+      - /usr/src/app/node_modules # Do not overwrite node_modules inside the container
     environment:
       - REACT_APP_API_URL=http://localhost:3001 # API URL to communicate with the backend
 
