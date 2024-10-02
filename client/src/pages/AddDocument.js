@@ -31,14 +31,15 @@ const AddDocument = ({ onAddDocument }) => {
     <div>
       <h2 style={{ textAlign: 'center' }}>Lägg till dokument</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Rubrik:</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+      <div>
+        <label htmlFor="Rubrik">Rubrik:</label> {/* Lägg till htmlFor som matchar id */}
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          id="Rubrik" // Detta id måste matcha labelns htmlFor
+        />
         </div>
         <div>
           <label>Innehåll:</label>
