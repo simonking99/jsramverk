@@ -3,7 +3,7 @@ import { strict as assert } from 'assert';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoClient } from 'mongodb';
 import docs from '../../src/doc/docs.mjs';
-import { connectToDb, getDb } from '../../data/db/database.mjs';
+import { connectToDbTest } from '../../data/db/database.mjs';
 
 describe('docs module', function() {
     let mongoServer;
@@ -15,7 +15,7 @@ describe('docs module', function() {
 
         client = new MongoClient(uri);
         await client.connect();
-        await connectToDb(uri);
+        await connectToDbTest(uri);
 
     });
 
