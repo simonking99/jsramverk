@@ -1,28 +1,57 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
 import AddDocument from './pages/AddDocument';
 import DocumentList from './pages/DocumentList';
-import UpdateDocument from './pages/UpdateDocument'; 
-//test
-import Header from './components/Headers'; 
-import Footer from './components/Footer'; 
+import UpdateDocument from './pages/UpdateDocument';
+import Header from './components/Headers';
+import Footer from './components/Footer';
 import './App.css';
 
 const App = () => {
+  const [currentView, setCurrentView] = useState('list');
+  const [currentDocument, setCurrentDocument] = useState(null);
+
+  const handleAddDocument = () => {
+    setCurrentView('add');
+  };
+
+  const handleUpdateDocument = (doc) => {
+    setCurrentDocument(doc);
+    setCurrentView('update');
+  };
+
+  const handleBackToList = () => {
+    setCurrentView('list');
+  };
+
+  const renderView = () => {
+    switch (currentView) {
+      case 'add':
+        return <AddDocument onAddDocument={handleBackToList} />;
+      case 'update':
+        return (
+          <UpdateDocument 
+            document={currentDocument}
+            onUpdateDocument={handleBackToList}
+          />
+        );
+      default:
+        return (
+          <DocumentList 
+            onUpdate={handleUpdateDocument} 
+            onAddDocument={handleAddDocument}
+          />
+        ); 
+    }
+  };
+
   return (
-    <BrowserRouter>
-      <div className="app-container"> {/* Make sure this matches your CSS */}
-        <Header />
-        <main>
-          <Routes>
-            <Route path="/" element={<DocumentList />} />
-            <Route path="/add" element={<AddDocument />} />
-            <Route path="/update/:id" element={<UpdateDocument />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </BrowserRouter>
+    <div className="app-container">
+      <Header />
+      <main>
+        {renderView()}
+      </main>
+      <Footer />
+    </div>
   );
 };
 

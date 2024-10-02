@@ -1,45 +1,45 @@
-// src/pages/UpdateDocument.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
 
-const UpdateDocument = () => {
-  const { id } = useParams(); // Get the document ID from the URL
-  const navigate = useNavigate(); // To navigate programmatically
+const UpdateDocument = ({ document, onUpdateDocument }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
   useEffect(() => {
-    const fetchDocument = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/document/${id}`);
-        setTitle(response.data.title || '');
-        setContent(response.data.content || '');
-      } catch (error) {
-        console.error('There was an error fetching the document!', error);
-      }
-    };
-
-    fetchDocument();
-  }, [id]);
+    if (document) {
+      setTitle(document.title || '');
+      setContent(document.content || '');
+    }
+  }, [document]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
+    if (!document || !document._id) {
+      console.error('Inget dokument att uppdatera.');
+      alert('Inget dokument att uppdatera.');
+      return;
+    }
+
     try {
-      await axios.put(`http://localhost:3001/updateone/${id}`, { title, content });
-      navigate('/'); // Redirect to the document list after update
+      await axios.put(`http://localhost:3001/updateone/${document._id}`, { title, content });
+      onUpdateDocument();
     } catch (error) {
-      console.error('There was an error updating the document!', error);
-      alert('There was an error updating the document!');
+      console.error('Det uppstod ett fel vid uppdatering av dokumentet!', error);
+      alert('Det uppstod ett fel vid uppdatering av dokumentet!');
     }
   };
 
+  if (!document) {
+    return <div>Inga dokument att uppdatera.</div>;
+  }
+
   return (
     <div>
-      <h2>Update Document</h2>
+      <h2>Uppdatera dokument</h2>
       <form onSubmit={handleUpdate}>
         <div>
-          <label>Title:</label>
+          <label>Rubrik:</label>
           <input
             type="text"
             value={title}
@@ -48,14 +48,14 @@ const UpdateDocument = () => {
           />
         </div>
         <div>
-          <label>Content:</label>
+          <label>Innehåll:</label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             required
           />
         </div>
-        <button type="submit">Update Document</button>
+        <button type="submit">Uppdatera dokument</button>
       </form>
     </div>
   );
