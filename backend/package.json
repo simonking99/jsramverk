@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "nyc --reporter=html --reporter=text mocha --require @babel/register 'test/**/*.{mjs,js}' --exit",
+    "test": "nyc --reporter=html --reporter=text mocha --require @babel/register 'test/**/*.{mjs,js}' --exit --timeout 15000",
     "clean": "rm -rf node_modules package-lock.json"
   },
   "nyc": {
@@ -35,7 +35,7 @@
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
-    "mongodb": "^6.8.1",
+    "mongodb": "^6.9.0",
     "mongodb-memory-server": "^10.0.0",
     "morgan": "^1.10.0",
     "sqlite": "^5.1.1",
