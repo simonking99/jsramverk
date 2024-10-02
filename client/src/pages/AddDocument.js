@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
-const AddDocument = () => {
+const AddDocument = ({ onAddDocument }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
+
     try {
       await axios.post('http://localhost:3001/addone', {
         title,
@@ -16,17 +19,20 @@ const AddDocument = () => {
       });
       setTitle('');
       setContent('');
-      navigate('/'); // Redirect to the DocumentList page
+      setSuccessMessage('Dokumentet har lagts till framgångsrikt!');
+      onAddDocument();
     } catch (error) {
-      console.error('There was an error adding the document!', error);
+      console.error('Det uppstod ett fel vid tillägg av dokumentet!', error);
+      setErrorMessage('Det uppstod ett fel vid tillägg av dokumentet. Vänligen försök igen.');
     }
   };
 
   return (
     <div>
-      <h2 style={{ textAlign: 'center' }}>Add Document</h2>      <form onSubmit={handleSubmit}>
+      <h2 style={{ textAlign: 'center' }}>Lägg till dokument</h2>
+      <form onSubmit={handleSubmit}>
         <div>
-          <label>Title:</label>
+          <label>Rubrik:</label>
           <input
             type="text"
             value={title}
@@ -35,15 +41,17 @@ const AddDocument = () => {
           />
         </div>
         <div>
-          <label>Content:</label>
+          <label>Innehåll:</label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             required
           />
         </div>
-        <button type="submit">Add Document</button>
+        <button type="submit">Lägg till dokument</button>
       </form>
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
     </div>
   );
 };

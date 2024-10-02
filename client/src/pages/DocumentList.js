@@ -1,14 +1,8 @@
-// src/DocumentList.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; // Import Link component
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
-
-const DocumentList = () => {
+const DocumentList = ({ onUpdate, onAddDocument }) => {
   const [documents, setDocuments] = useState([]);
-  const navigate = useNavigate(); // Use navigate for redirection
-
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -16,47 +10,54 @@ const DocumentList = () => {
         const response = await axios.get('http://localhost:3001/');
         setDocuments(response.data);
       } catch (error) {
-        console.error('There was an error fetching the documents!', error);
+        console.error('Det uppstod ett fel vid hämtning av dokument!', error);
       }
     };
 
     fetchDocuments();
   }, []);
 
-  const handleNavigateToAdd = () => {
-    navigate('/add'); // Navigate to the add document page
+  const handleUpdateDocument = (doc) => {
+    onUpdate(doc);
   };
 
   const handleDeleteAll = async () => {
     try {
       await axios.delete('http://localhost:3001/deleteAll');
-      setDocuments([]); // Clear the document list after deletion
-      // You can use navigate to refresh the page or redirect
+      setDocuments([]);
     } catch (error) {
-      console.error('There was an error deleting the documents!', error);
-      alert('There was an error deleting the documents!');
+      console.error('Det uppstod ett fel vid radering av dokumenten!', error);
+      alert('Det uppstod ett fel vid radering av dokumenten!');
     }
   };
 
   return (
     <div>
-      <h2>Document List</h2>
+      <h2>Dokumentlista</h2>
       <ul>
         {documents.map((doc) => (
           <li key={doc._id}>
             <h3>
-              <Link to={`/update/${doc._id}`} className="document-title-link">
+              <span 
+                onClick={() => handleUpdateDocument(doc)} 
+                className="document-title-link" 
+                style={{ cursor: 'pointer' }}
+              >
                 {doc.title || 'Untitled'}
-              </Link>
+              </span>
             </h3>
           </li>
         ))}
       </ul>
-      <button onClick={handleNavigateToAdd} className="add-document-link" style={{ marginRight: '10px' }}>
-        Add New Document
+      <button 
+        onClick={onAddDocument}
+        className="add-document-link" 
+        style={{ marginRight: '10px' }}
+      >
+        Lägg till nytt dokument
       </button>
       <button onClick={handleDeleteAll} className="delete-all-button">
-        Delete All Documents
+        Ta bort alla dokument
       </button>
     </div>
   );
