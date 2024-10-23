@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AddDocument from './pages/AddDocument';
 import DocumentList from './pages/DocumentList';
 import UpdateDocument from './pages/UpdateDocument';
 import Header from './components/Headers';
 import Footer from './components/Footer';
+import Register from './components/Register';
+import Login from './components/Login';
 import './App.css';
+import { useNavigate, Routes, Route } from 'react-router-dom';
 
 const App = () => {
   const [currentView, setCurrentView] = useState('list');
   const [currentDocument, setCurrentDocument] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+      navigate('/documents');
+    } else {
+      if (window.location.pathname !== '/register') {
+        navigate('/login');
+      }
+    }
+  }, [navigate]);
 
   const handleAddDocument = () => {
     setCurrentView('add');
@@ -46,9 +64,13 @@ const App = () => {
 
   return (
     <div className="app-container">
-      <Header />
+      <Header isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
       <main>
-        {renderView()}
+        <Routes>
+          <Route path="/documents" element={renderView()} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+        </Routes>
       </main>
       <Footer />
     </div>

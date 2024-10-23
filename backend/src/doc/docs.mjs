@@ -1,60 +1,62 @@
-// docs.mjs
 import { getDb } from '../../data/db/database.mjs';
 import { ObjectId } from 'mongodb';
 
 const docs = {
-    getAll: async function getAll() {
+    getAllByUser: async (userId) => {
         const db = getDb();
-        try {
-            return await db.collection('documents').find().toArray();
-        } catch (e) {
-            console.error(e);
-            return [];
-        }
+        return await db.collection('documents').find({ userId }).toArray();
     },
 
-    getOne: async function getOne(id) {
+    getAllShared: async (userId) => {
         const db = getDb();
-        try {
-            return await db.collection('documents').findOne({ _id: new ObjectId(id) });
-        } catch (e) {
-            console.error(e);
-            return {};
-        }
+        
+        const objectIdUserId = new ObjectId(userId);
+
+        return await db.collection('documents').find({
+            sharedWith: objectIdUserId
+        }).toArray();
     },
 
-    addOne: async function addOne(body) {
+    getOne: async (id) => {
         const db = getDb();
-        try {
-            const result = await db.collection('documents').insertOne({
-                title: body.title,
-                content: body.content
-            });
-            return result;
-        } catch (e) {
-            console.error(e);
-        }
+        return await db.collection('documents').findOne({ _id: new ObjectId(id) });
     },
 
-    updateOne: async function updateOne(id, body) {
+    addOne: async (documentData) => {
         const db = getDb();
-        try {
-            return await db.collection('documents').updateOne(
-                { _id: new ObjectId(id) },
-                { $set: { title: body.title, content: body.content } }
-            );
-        } catch (e) {
-            console.error(e);
-        }
+        return await db.collection('documents').insertOne(documentData);
     },
-    deleteAll: async function deleteAll() {
+
+    updateOne: async (id, updateData) => {
         const db = getDb();
-        try {
-            return await db.collection('documents').deleteMany({});
-        } catch (e) {
-            console.error(e);
+        return await db.collection('documents').updateOne(
+            { _id: new ObjectId(id) },
+            { $set: updateData }
+        );
+    },
+
+    deleteAllByUser: async (userId) => {
+        const db = getDb();
+        return await db.collection('documents').deleteMany({ userId });
+    },
+
+    share: async (documentId, userId) => {
+        const db = getDb();
+        return await db.collection('documents').updateOne(
+            { _id: new ObjectId(documentId) },
+            { $addToSet: { sharedWith: userId } }
+        );
+    },
+
+    copyDocumentId: async (id) => {
+        const db = getDb();
+        const document = await db.collection('documents').findOne({ _id: new ObjectId(id) });
+        if (document) {
+            return document._id.toString();
         }
+        throw new Error('Dokumentet hittades inte');
     }
+
 };
 
 export default docs;

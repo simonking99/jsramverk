@@ -1,60 +1,51 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const AddDocument = ({ onAddDocument }) => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
+    const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMessage('');
-    setSuccessMessage('');
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const documentData = { title, content };
+            await axios.post('http://localhost:3001/addone', documentData, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            onAddDocument();
+        } catch (error) {
+            console.error('Error adding document:', error);
+        }
+    };
 
-    try {
-      await axios.post('http://localhost:3001/addone', {
-        title,
-        content,
-      });
-      setTitle('');
-      setContent('');
-      setSuccessMessage('Dokumentet har lagts till framgångsrikt!');
-      onAddDocument();
-    } catch (error) {
-      console.error('Det uppstod ett fel vid tillägg av dokumentet!', error);
-      setErrorMessage('Det uppstod ett fel vid tillägg av dokumentet. Vänligen försök igen.');
-    }
-  };
+    const handleBack = () => {
+        onAddDocument();
+        navigate('/documents');
+    };
 
-  return (
-    <div>
-      <h2 style={{ textAlign: 'center' }}>Lägg till dokument</h2>
-      <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="Rubrik">Rubrik:</label> {/* Lägg till htmlFor som matchar id */}
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          id="Rubrik" // Detta id måste matcha labelns htmlFor
-        />
-        </div>
+    return (
         <div>
-          <label>Innehåll:</label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-          />
+            <h2>Lägg till nytt dokument</h2>
+            <form onSubmit={handleSubmit}>
+                <input 
+                    value={title} 
+                    onChange={e => setTitle(e.target.value)} 
+                    placeholder="Rubrik" 
+                />
+                <textarea 
+                    value={content} 
+                    onChange={e => setContent(e.target.value)} 
+                    placeholder="Innehåll" 
+                />
+                <button type="submit">Lägg till dokument</button>
+            </form>
+            <button onClick={handleBack}>Tillbaka</button>
         </div>
-        <button type="submit">Lägg till dokument</button>
-      </form>
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-    </div>
-  );
+    );
 };
 
 export default AddDocument;
