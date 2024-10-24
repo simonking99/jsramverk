@@ -11,18 +11,6 @@ html, body {
   min-height: 100vh; /* Full viewport height */
 }
 
-/* Header styling */
-.App-header {
-  background-color: #282c34;
-  min-height: 15vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
 /* Main content area */
 main {
   flex: 1; /* This makes the main content area grow to take up available space */
@@ -191,3 +179,119 @@ button:hover {
 .delete-all-button:hover {
   background-color: #c82333;
 }
+
+.button-margin {
+  margin-bottom: 20px; /* Justera värdet efter behov */
+}
+
+/* Style for the header */
+.App-header {
+  background-color: #282c34;
+  padding: 20px; /* Padding to give space inside the header */
+  display: flex;
+  justify-content: space-between; /* Aligns content properly */
+  align-items: center; /* Vertically centers the content */
+  color: white;
+}
+
+/* Adjust the nav to keep items aligned */
+.App-header nav {
+  display: flex;
+  align-items: center; /* Vertical centering of the buttons */
+}
+
+/* Styles for login and register links */
+.nav-link {
+  padding: 10px 20px;
+  margin-right: 10px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.nav-link:hover {
+  background-color: #0056b3;
+}
+
+/* Style for the logout button */
+.logout-button {
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* app.css */
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+.input-title {
+  width: 96%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.textarea-content {
+  width: 100%;
+  padding: 10px;
+  height: 200px;
+  margin-bottom: 10px;
+}
+
+.btn-update {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-update:hover {
+  background-color: #0056b3;
+}
+
+.share-section, .invite-section {
+  margin-top: 20px;
+}
+
+.input-share, .input-invite {
+  width: 30%;
+  padding: 10px;
+  margin-right: 10px;
+}
+
+.btn-share, .btn-invite {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-share:hover, .btn-invite:hover {
+  background-color: #218838;
+}
+
+.btn-back {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-back:hover {
+  background-color: #c82333;
+}
+

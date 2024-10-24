@@ -31,22 +31,28 @@
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
     "@babel/register": "^7.24.6",
+    "@sendgrid/mail": "^7.4.0",
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.9.0",
     "mongodb-memory-server": "^10.0.0",
     "morgan": "^1.10.0",
+    "socket.io": "^4.8.0",
+    "socket.io-client": "^4.8.0",
     "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7",
-    "bcrypt": "^5.0.1",
-    "jsonwebtoken": "^9.0.2",
-    "@sendgrid/mail": "^7.4.0"
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "chai": "^4.3.6",
     "mocha": "^10.7.3",
     "nyc": "^15.1.0"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.8",
+    "utf-8-validate": "^6.0.4"
   }
 }

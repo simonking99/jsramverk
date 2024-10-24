@@ -4,14 +4,29 @@ import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import cors from 'cors';
 import { connectToMongo, getDb } from './data/db/database.mjs';
-import documents from "./src/doc/docs.mjs";
+import documents from './src/doc/docs.mjs';
 import authenticate from './middleware/authenticate.mjs';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import sgMail from '@sendgrid/mail';
+import { createServer } from 'http'; // Importera http för att skapa en HTTP-server
+import { Server } from 'socket.io'; // Importera socket.io
 
 const app = express();
 const port = process.env.PORT || 3001;
+
+// Skapa HTTP-server för socket.io
+const httpServer = createServer(app);
+
+// Skapa en ny instans av socket.io
+const io = new Server(httpServer, {
+    cors: {
+        origin: "http://localhost:3000", // Tillåt anslutning från frontend
+        methods: ["GET", "POST"],
+        credentials: true // Säkerställ att credentials (cookies, tokens) skickas korrekt
+    },
+    transports: ['websocket'], // Tvinga endast WebSocket-transport
+});
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -22,17 +37,39 @@ app.use(morgan('combined'));
 
 connectToMongo().catch(console.error);
 
+// Hantera socket.io anslutning
+io.on('connection', (socket) => {
+    console.log('En användare anslöt:', socket.id);
+
+    socket.on('create', (documentId) => {
+        console.log(`Användaren gick med i dokumentrummet: ${documentId}`);
+        socket.join(documentId);
+    });
+
+    socket.on('doc', (data) => {
+        const { _id, title, html } = data;
+        console.log(`Mottog uppdatering för dokument: ${_id}, sänder ändringar.`);
+        io.to(_id).emit('doc', { _id, title, html });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Användaren kopplade från:', socket.id);
+    });
+
+    socket.on('error', (err) => {
+        console.log('Socket-fel:', err);
+    });
+});
+
+// Våra routes
 app.get('/documents', authenticate, async (req, res) => {
     const userId = req.user.id;
     console.log(req.user);
 
     try {
         const userDocs = await documents.getAllByUser(userId);
-
         const sharedDocs = await documents.getAllShared(userId);
-
         const allDocs = [...userDocs, ...sharedDocs];
-
         res.json(allDocs);
     } catch (error) {
         console.error('Fel vid hämtning av dokument:', error);
@@ -111,8 +148,6 @@ app.post('/invite', authenticate, async (req, res) => {
     }
 });
 
-
-
 app.post('/share', authenticate, async (req, res) => {
     const { documentId, username } = req.body;
 
@@ -137,21 +172,11 @@ app.get('/document/:id', authenticate, async (req, res) => {
     const id = req.params.id;
     const doc = await documents.getOne(id);
 
-    if (doc.userId !== req.user.id) {
-        return res.status(403).json({ error: 'Du har inte åtkomst till detta dokument' });
-    }
-
     res.json(doc);
 });
 
 app.put('/updateone/:id', authenticate, async (req, res) => {
     const id = req.params.id;
-    const doc = await documents.getOne(id);
-
-    if (doc.userId !== req.user.id) {
-        return res.status(403).json({ error: 'Du har inte åtkomst till att uppdatera detta dokument' });
-    }
-
     const result = await documents.updateOne(id, req.body);
     res.json({ success: true, result });
 });
@@ -162,6 +187,7 @@ app.delete('/deleteAll', authenticate, async (req, res) => {
     res.json({ success: true, deletedCount: result.deletedCount });
 });
 
-app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
+// Starta servern och lyssna på porten
+httpServer.listen(port, () => {
+    console.log(`Appen lyssnar på port ${port}`);
 });

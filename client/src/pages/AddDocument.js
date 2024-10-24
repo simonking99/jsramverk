@@ -31,19 +31,24 @@ const AddDocument = ({ onAddDocument }) => {
         <div>
             <h2>Lägg till nytt dokument</h2>
             <form onSubmit={handleSubmit}>
-                <input 
-                    value={title} 
-                    onChange={e => setTitle(e.target.value)} 
-                    placeholder="Rubrik" 
-                />
-                <textarea 
-                    value={content} 
-                    onChange={e => setContent(e.target.value)} 
-                    placeholder="Innehåll" 
-                />
-                <button type="submit">Lägg till dokument</button>
+            <input 
+                value={title} 
+                onChange={e => setTitle(e.target.value)} 
+                placeholder="Rubrik" 
+                style={{ marginBottom: '10px' }} /* Adds space below the input */
+            />
+            <textarea 
+                value={content} 
+                onChange={e => setContent(e.target.value)} 
+                placeholder="Innehåll" 
+            />
+            <button type="submit">Lägg till dokument</button>
             </form>
-            <button onClick={handleBack}>Tillbaka</button>
+
+            <br></br>
+            <center>
+                <button onClick={handleBack} className="button-margin">Tillbaka</button>
+                </center>
         </div>
     );
 };
