@@ -15,6 +15,17 @@ import { Server } from 'socket.io'; // Importera socket.io
 const app = express();
 const port = process.env.PORT || 3001;
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+app.disable('x-powered-by');
+app.use(cors());
+app.use(bodyParser.json());
+app.use(morgan('combined'));
+
+connectToMongo().catch(console.error);
+
+console.log("Loaded SendGrid API Key:", process.env.SENDGRID_API_KEY ? "Yes" : "No");
+
 // Skapa HTTP-server för socket.io
 const httpServer = createServer(app);
 
@@ -28,28 +39,35 @@ const io = new Server(httpServer, {
     transports: ['websocket'], // Tvinga endast WebSocket-transport
 });
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-app.disable('x-powered-by');
-app.use(cors());
-app.use(bodyParser.json());
-app.use(morgan('combined'));
-
-connectToMongo().catch(console.error);
-
 // Hantera socket.io anslutning
 io.on('connection', (socket) => {
     console.log('En användare anslöt:', socket.id);
 
+    // Användaren går med i dokumentets rum
     socket.on('create', (documentId) => {
         console.log(`Användaren gick med i dokumentrummet: ${documentId}`);
         socket.join(documentId);
+        
+        const clientsInRoom = io.sockets.adapter.rooms.get(documentId)?.size || 0;
+        console.log(`Antal användare i rummet ${documentId}: ${clientsInRoom}`);
     });
 
+     // Hantera dokumentuppdateringar
+   // Hantera dokumentuppdateringar och sänd dem till rummet
     socket.on('doc', (data) => {
         const { _id, title, html } = data;
-        console.log(`Mottog uppdatering för dokument: ${_id}, sänder ändringar.`);
-        io.to(_id).emit('doc', { _id, title, html });
+        socket.to(_id).emit('doc', { _id, title, html });
+        console.log(`Sent document update to room ${_id}`);
+    });
+
+    // Hantera nya kommentarer
+    socket.on('newComment', (commentData) => {
+        const { documentId, line, text, user } = commentData;
+        console.log(`Received new comment for document ${documentId}: "${text}" on line ${line} by ${user}`);
+
+        // Skicka kommentaren till andra användare i samma dokumentrum
+        console.log(`Sending comment to room: ${documentId}`);
+        socket.to(documentId).emit('newComment', commentData); // Skicka till alla andra utom avsändaren
     });
 
     socket.on('disconnect', () => {
@@ -60,6 +78,7 @@ io.on('connection', (socket) => {
         console.log('Socket-fel:', err);
     });
 });
+
 
 // Våra routes
 app.get('/documents', authenticate, async (req, res) => {
@@ -143,10 +162,15 @@ app.post('/invite', authenticate, async (req, res) => {
         await sgMail.send(msg);
         res.json({ success: true, message: 'Inbjudan skickad' });
     } catch (error) {
+        // Logga hela felet inklusive statuskod och svar från SendGrid
         console.error('Fel vid skickande av inbjudan:', error);
-        res.status(500).json({ success: false, message: 'Fel vid skickande av inbjudan' });
+        if (error.response) {
+            console.error('SendGrid Response:', error.response.status, error.response.body);
+        }
+        res.status(500).json({ success: false, message: 'Fel vid skickande av inbjudan', error: error.response?.body });
     }
 });
+
 
 app.post('/share', authenticate, async (req, res) => {
     const { documentId, username } = req.body;
