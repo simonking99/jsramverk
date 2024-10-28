@@ -1,14 +1,18 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import App from './App'; // Adjust the path if necessary
+import { BrowserRouter } from 'react-router-dom'; // Importera BrowserRouter
+import App from './App'; // Justera sökvägen om det behövs
 
 test('renders data from API', async () => {
-  // Render the component within the test
-  render(<App />);
+  // Lägg till BrowserRouter runt App-komponenten
+  render(
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  );
 
-  // Assuming your component displays a loading state first,
-  // we wait for the element to appear in the document.
+  // Vi väntar på att "Add New Document"-texten ska visas
   const linkElement = await waitFor(() => screen.getByText(/Add New Document/i));
-  
-  // Expect the link to be present in the document
+
+  // Förväntar oss att länken ska vara i dokumentet
   expect(linkElement).toBeInTheDocument();
 });
