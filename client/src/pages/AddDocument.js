@@ -28,27 +28,33 @@ const AddDocument = ({ onAddDocument }) => {
     };
 
     return (
-        <div>
+        <div className="add-document-container">
             <h2>Lägg till nytt dokument</h2>
-            <form onSubmit={handleSubmit}>
-            <input 
-                value={title} 
-                onChange={e => setTitle(e.target.value)} 
-                placeholder="Rubrik" 
-                style={{ marginBottom: '10px' }} /* Adds space below the input */
-            />
-            <textarea 
-                value={content} 
-                onChange={e => setContent(e.target.value)} 
-                placeholder="Innehåll" 
-            />
-            <button type="submit">Lägg till dokument</button>
+            <form onSubmit={handleSubmit} className="add-document-form">
+                <label htmlFor="title" className="label"></label>
+                <input 
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Rubrik"
+                    className="input-title"
+                />
+
+                <label htmlFor="content" className="label"></label>
+                <textarea 
+                    id="content"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder="Innehåll"
+                    className="textarea-content"
+                />
+
+                <button type="submit" className="btn-add">Lägg till dokument</button>
             </form>
 
-            <br></br>
             <center>
-                <button onClick={handleBack} className="button-margin">Tillbaka</button>
-                </center>
+                <button onClick={handleBack} className="btn-back">Tillbaka</button>
+            </center>
         </div>
     );
 };

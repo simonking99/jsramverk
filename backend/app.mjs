@@ -9,8 +9,8 @@ import authenticate from './middleware/authenticate.mjs';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import sgMail from '@sendgrid/mail';
-import { createServer } from 'http'; // Importera http för att skapa en HTTP-server
-import { Server } from 'socket.io'; // Importera socket.io
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -26,24 +26,22 @@ connectToMongo().catch(console.error);
 
 console.log("Loaded SendGrid API Key:", process.env.SENDGRID_API_KEY ? "Yes" : "No");
 
-// Skapa HTTP-server för socket.io
+
 const httpServer = createServer(app);
 
-// Skapa en ny instans av socket.io
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://localhost:3000", // Tillåt anslutning från frontend
+        origin: "http://localhost:3000",
         methods: ["GET", "POST"],
-        credentials: true // Säkerställ att credentials (cookies, tokens) skickas korrekt
+        credentials: true
     },
-    transports: ['websocket'], // Tvinga endast WebSocket-transport
+    transports: ['websocket'],
 });
 
 // Hantera socket.io anslutning
 io.on('connection', (socket) => {
     console.log('En användare anslöt:', socket.id);
 
-    // Användaren går med i dokumentets rum
     socket.on('create', (documentId) => {
         console.log(`Användaren gick med i dokumentrummet: ${documentId}`);
         socket.join(documentId);
@@ -52,22 +50,18 @@ io.on('connection', (socket) => {
         console.log(`Antal användare i rummet ${documentId}: ${clientsInRoom}`);
     });
 
-     // Hantera dokumentuppdateringar
-   // Hantera dokumentuppdateringar och sänd dem till rummet
     socket.on('doc', (data) => {
         const { _id, title, html } = data;
         socket.to(_id).emit('doc', { _id, title, html });
         console.log(`Sent document update to room ${_id}`);
     });
 
-    // Hantera nya kommentarer
     socket.on('newComment', (commentData) => {
         const { documentId, line, text, user } = commentData;
         console.log(`Received new comment for document ${documentId}: "${text}" on line ${line} by ${user}`);
 
-        // Skicka kommentaren till andra användare i samma dokumentrum
         console.log(`Sending comment to room: ${documentId}`);
-        socket.to(documentId).emit('newComment', commentData); // Skicka till alla andra utom avsändaren
+        socket.to(documentId).emit('newComment', commentData);
     });
 
     socket.on('disconnect', () => {
@@ -79,8 +73,6 @@ io.on('connection', (socket) => {
     });
 });
 
-
-// Våra routes
 app.get('/documents', authenticate, async (req, res) => {
     const userId = req.user.id;
     console.log(req.user);
@@ -162,7 +154,6 @@ app.post('/invite', authenticate, async (req, res) => {
         await sgMail.send(msg);
         res.json({ success: true, message: 'Inbjudan skickad' });
     } catch (error) {
-        // Logga hela felet inklusive statuskod och svar från SendGrid
         console.error('Fel vid skickande av inbjudan:', error);
         if (error.response) {
             console.error('SendGrid Response:', error.response.status, error.response.body);
@@ -211,7 +202,6 @@ app.delete('/deleteAll', authenticate, async (req, res) => {
     res.json({ success: true, deletedCount: result.deletedCount });
 });
 
-// Starta servern och lyssna på porten
 httpServer.listen(port, () => {
     console.log(`Appen lyssnar på port ${port}`);
 });

@@ -22,7 +22,7 @@ const Header = ({ isAuthenticated, setIsAuthenticated }) => {
         {/* Visa olika knappar beroende på om användaren är inloggad */}
         {isAuthenticated ? (
         <>
-          <button onClick={handleLogout} className="logout-button">Logga ut</button>
+          <button onClick={handleLogout} className="logout-button">Sign out</button>
         </>
         ) : (
           <>
