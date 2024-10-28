@@ -44,6 +44,7 @@ const Login = ({ setIsAuthenticated }) => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
+        <br></br>
         <button type="submit">Logga in</button>
       </form>
     </div>

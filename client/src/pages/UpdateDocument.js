@@ -1,28 +1,105 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
+import Editor from '@monaco-editor/react';
+
+const socket = io('http://localhost:3001', {
+    transports: ['websocket'],
+    path: '/socket.io',
+});
 
 const UpdateDocument = ({ document, onUpdateDocument }) => {
     const [title, setTitle] = useState(document.title || '');
     const [content, setContent] = useState(document.content || '');
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
+    const [selectedLine, setSelectedLine] = useState(null);
     const [username, setUsername] = useState('');
-    const [recipientEmail, setRecipientEmail] = useState(''); // Ny state för e-postadress
+    const [recipientEmail, setRecipientEmail] = useState('');
+    const [output, setOutput] = useState('');
+    const [isCodeMode, setIsCodeMode] = useState(document.isCode || false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        socket.emit('create', document._id);
+        socket.on('doc', (data) => {
+            if (data._id === document._id) {
+                setTitle(data.title);
+                setContent(data.html);
+            }
+        });
+
+        socket.on('newComment', (commentData) => {
+            if (commentData.documentId === document._id) {
+                setComments((prevComments) => [...prevComments, commentData]);
+            }
+        });
+
+        return () => {
+            socket.off('doc');
+            socket.off('newComment');
+        };
+    }, [document._id]);
+
+    const handleTitleChange = (e) => {
+        const newTitle = e.target.value;
+        setTitle(newTitle);
+        socket.emit('doc', { _id: document._id, title: newTitle, html: content });
+    };
+
+    const handleContentChange = (value) => {
+        setContent(value || '');
+        socket.emit('doc', { _id: document._id, title, html: value });
+    };
+
+    const handleAddComment = () => {
+        if (newComment && selectedLine !== null) {
+            const commentData = { 
+                documentId: document._id, 
+                line: selectedLine, 
+                text: newComment, 
+                user: 'Comment received: '
+            };
+            socket.emit('newComment', commentData);
+            setNewComment('');
+            setSelectedLine(null);
+        }
+    };
 
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            const documentData = { title, content };
+            const documentData = { title, content, comments, isCode: isCodeMode };
             await axios.put(`http://localhost:3001/updateone/${document._id}`, documentData, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             onUpdateDocument();
         } catch (error) {
-            console.error('Fel vid uppdatering av dokument:', error);
+            console.error('Error updating document:', error);
         }
     };
+
+    const handleExecuteCode = async () => {
+        const encodedCode = btoa(content);
+        const data = { code: encodedCode };
+
+        try {
+            const response = await fetch("https://execjs.emilfolino.se/code", {
+                body: JSON.stringify(data),
+                headers: { 'content-type': 'application/json' },
+                method: 'POST'
+            });
+            const result = await response.json();
+            const decodedOutput = atob(result.data);
+            setOutput(decodedOutput);
+        } catch (error) {
+            console.error('Error executing code:', error);
+            setOutput('Failed to execute code.');
+        }
+    };
+
+    const handleToggleCodeMode = () => setIsCodeMode(!isCodeMode);
 
     const handleShare = async () => {
         try {
@@ -30,15 +107,13 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
                 documentId: document._id,
                 username: username
             }, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
-            alert('Dokumentet delades framgångsrikt!');
+            alert('Document shared successfully!');
             setUsername('');
         } catch (error) {
-            console.error('Fel vid delning av dokument:', error);
-            alert('Det gick inte att dela dokumentet. Försök igen.');
+            console.error('Error sharing document:', error);
+            alert('Failed to share document. Please try again.');
         }
     };
 
@@ -48,9 +123,7 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
                 recipientEmail: recipientEmail,
                 documentId: document._id
             }, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             alert('Inbjudan skickad till ' + recipientEmail);
             setRecipientEmail('');
@@ -66,45 +139,70 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
     };
 
     return (
-        <div>
-            <h2>Uppdatera dokument</h2>
-            <form onSubmit={handleUpdate}>
-                <input 
-                    value={title} 
-                    onChange={e => setTitle(e.target.value)} 
-                    placeholder="Rubrik" 
-                />
-                <textarea 
-                    value={content} 
-                    onChange={e => setContent(e.target.value)} 
-                    placeholder="Innehåll" 
-                />
-                <button type="submit">Uppdatera dokument</button>
-            </form>
-
-            <div style={{ marginTop: '20px' }}>
-                <h3>Dela dokument med annan användare</h3>
-                <input 
-                    type="text" 
-                    value={username} 
-                    onChange={e => setUsername(e.target.value)} 
-                    placeholder="Ange användarnamn" 
-                />
-                <button onClick={handleShare}>Dela dokument</button>
+        <div className="update-document-container">
+            <div className="editor-section">
+                <h2>Update Document</h2>
+                <form onSubmit={handleUpdate}>
+                    <input value={title} onChange={handleTitleChange} placeholder="Title" className="input-title" />
+                    <button type="button" onClick={handleToggleCodeMode} className="btn-toggle-mode">
+                        {isCodeMode ? 'Switch to Text Mode' : 'Switch to Code Mode'}
+                    </button>
+                    {isCodeMode ? (
+                        <Editor height="200px" defaultLanguage="javascript" theme="vs-dark" value={content} onChange={handleContentChange} />
+                    ) : (
+                        <textarea value={content} onChange={(e) => handleContentChange(e.target.value)} placeholder="Content" className="textarea-content" />
+                    )}
+                    <button type="submit" className="btn-update">Update Document</button>
+                    <button type="button" onClick={handleExecuteCode} className="btn-run-code">Run Code</button>
+                    <div className="output-display">{"Output from code execution: " + output}</div>
+                </form>
             </div>
 
-            <div style={{ marginTop: '20px' }}>
-                <h3>Skicka inbjudan via e-post</h3>
-                <input 
-                    type="email" 
-                    value={recipientEmail} 
-                    onChange={e => setRecipientEmail(e.target.value)} 
-                    placeholder="Ange e-postadress" 
-                />
-                <button onClick={handleInvite}>Skicka inbjudan</button>
+            <div className="sidebar">
+            <div className="comments-section">
+                <h3>Comments</h3>
+                {content.split('\n').map((_, index) => (
+                    <div key={index} className="comment-row">
+                        <div className="comment-row-header">
+                            <span>Row {index + 1}:</span>
+                            <button onClick={() => setSelectedLine(index)} className="btn-add-comment">Add Comment</button>
+                        <div className="comments-list">
+                            {comments
+                                .filter(comment => comment.line === index)
+                                .map((comment, idx) => (
+                                    <div key={idx} className="comment-display">
+                                        {comment.user}: {comment.text}
+                                    </div>
+                                ))}
+                                 </div>
+                        </div>
+                    </div>
+                ))}
+                {selectedLine !== null && (
+                    <div className="new-comment">
+                        <input
+                            value={newComment}
+                            onChange={e => setNewComment(e.target.value)}
+                            placeholder="Enter your comment"
+                        />
+                        <button onClick={handleAddComment} className="btn-submit-comment">Submit Comment</button>
+                    </div>
+                )}
             </div>
 
-            <button onClick={handleBack}>Tillbaka</button>
+                <div className="share-invite-section">
+                    <h3>Share & Invite Options</h3>
+                    <div className="share-section">
+                        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter username" className="input-share" />
+                        <button onClick={handleShare} className="btn-share">Share Document</button>
+                    </div>
+                    <div className="invite-section">
+                        <input type="email" value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} placeholder="Enter email address" className="input-invite" />
+                        <button onClick={handleInvite} className="btn-invite">Send Invite</button>
+                    </div>
+                    <button onClick={handleBack} className="btn-back">Back</button>
+                </div>
+            </div>
         </div>
     );
 };

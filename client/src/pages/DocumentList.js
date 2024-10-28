@@ -62,11 +62,11 @@ const DocumentList = ({ onUpdate, onAddDocument }) => {
 
     return (
         <div className="document-list-container">
-            <h2>Dokumentlista</h2>
-            <ul>
+            <h2>All available documents</h2>
+            <ul className="document-list">
                 {Array.isArray(documents) && documents.length > 0 ? (
                     documents.map((doc) => (
-                        <li key={doc._id}>
+                        <li key={doc._id} className="document-item">
                             <h3>
                                 <span 
                                     onClick={() => handleUpdateDocument(doc)} 
@@ -78,36 +78,31 @@ const DocumentList = ({ onUpdate, onAddDocument }) => {
                         </li>
                     ))
                 ) : (
-                    <li>Inga dokument tillgängliga</li>
+                    <li className="no-documents">No available documents</li>
                 )}
             </ul>
     
-    
-            <button
-                onClick={onAddDocument}
-                className="add-document-link" 
-                style={{ marginRight: '10px' }}
-            >
-                Lägg till nytt dokument
-            </button>
-            <button onClick={handleDeleteAll} className="delete-all-button">
-                Ta bort alla dokument
-            </button>
+            <div className="button-group">
+                <button onClick={onAddDocument} className="btn add-document">Add new document</button>
+                <button onClick={handleDeleteAll} className="btn delete-all">Delete all documents</button>
+            </div>
 
-            <div className="input-container">
+            <div className="share-document-section">
                 <input 
                     type="text" 
-                    placeholder="Skriv in dokumentets ID" 
+                    placeholder="Document-ID" 
                     value={inputId}
                     onChange={(e) => setInputId(e.target.value)} 
+                    className="input-field"
                 />
                 <input 
                     type="text" 
-                    placeholder="Skriv in ditt användarnamn"
+                    placeholder="Username"
                     value={userId}
                     onChange={(e) => setUserId(e.target.value)} 
+                    className="input-field"
                 />
-                <button onClick={handleShareDocument}>Hämta Dokument</button>
+                <button onClick={handleShareDocument} className="btn share-document">Get document</button>
             </div>
         </div>
     );

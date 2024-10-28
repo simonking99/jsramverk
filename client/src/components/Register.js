@@ -39,6 +39,7 @@ const Register = () => {
                         required
                     />
                 </div>
+                <br></br>
                 <button type="submit">Registrera</button>
             </form>
             {message && <p>{message}</p>}

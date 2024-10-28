@@ -1,31 +1,241 @@
-/* Ensure HTML and body take full height of the viewport */
+/* Reset basic styles */
 html, body {
   height: 100%;
   margin: 0;
 }
 
-/* Flexbox container for the layout */
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+/* Flexbox container for full height layout */
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Full viewport height */
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
 }
 
 /* Header styling */
 .App-header {
   background-color: #282c34;
-  min-height: 15vh;
+  padding: 20px;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
   color: white;
 }
 
-/* Main content area */
-main {
-  flex: 1; /* This makes the main content area grow to take up available space */
+.App-header nav {
+  display: flex;
+  align-items: center;
+}
+
+.nav-link, .logout-button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-link {
+  background-color: #007bff;
+}
+
+.nav-link:hover {
+  background-color: #0056b3;
+}
+
+.logout-button {
+  background-color: #dc3545;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+}
+
+/* General form styling */
+form {
+  max-width: 600px;
+  margin: 0 auto 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.input-title, .textarea-content, .input-share, .input-invite {
+  width: 80%;
+  margin: 10px 0;
+  padding: 8px;
+  font-size: 16px;
+}
+
+textarea, .textarea-content {
+  height: 200px;
+}
+
+/* Button styling - all buttons green */
+button, .btn, .btn-toggle-mode, .btn-update, .btn-run-code, .btn-add-comment, .btn-submit-comment, .btn-share, .btn-invite, .btn-back {
+  background-color: #28a745;
+  color: white;
+  margin: 5px;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+}
+
+button:hover, .btn:hover, .btn-share:hover, .btn-invite:hover {
+  background-color: #218838;
+}
+
+.btn-back {
+  background-color: #dc3545;
+}
+
+.btn-back:hover {
+  background-color: #c82333;
+}
+
+/* Sidebar for comments and sharing options */
+.update-document-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.editor-section {
+  width: 70%;
+  padding: 20px;
+}
+
+.sidebar {
+  width: 25%;
+  padding: 20px;
+  background-color: #f4f4f9;
+}
+
+.comments-section, .share-invite-section {
+  margin-bottom: 20px;
+}
+
+.comment-row, .share-section, .invite-section {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.comment-display, .output-display, .new-comment {
+  margin-top: 10px;
+  padding: 8px;
+  background-color: #e8e8e8;
+}
+
+/* Title and document styling */
+h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+/* Document List Container */
+.document-list-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f4f4f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.document-list-container h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.document-list {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.document-item {
+  padding: 10px 15px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  transition: box-shadow 0.3s ease;
+}
+
+.document-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.document-title-link {
+  font-size: 18px;
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.document-title-link:hover {
+  text-decoration: underline;
+}
+
+.no-documents {
+  color: #777;
+  font-style: italic;
+}
+
+/* Button group for add and delete */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Responsive Share Document Section */
+.share-document-section {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.input-field, .input-share, .input-invite {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.share-document {
+  background-color: #007bff;
+}
+
+.share-document:hover {
+  background-color: #0056b3;
 }
 
 /* Footer styling */
@@ -36,158 +246,78 @@ main {
   padding: 10px;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  margin-bottom: 1.4rem;
-  padding-left: 1rem;
-  background-color: #f9f9f9;
-}
-
-li h3 {
-  font-size: 1.4rem;
-  margin-bottom: 0.5rem;
-}
-
-li p {
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-li small {
-  font-size: 0.8rem;
-  color: #666;
-}
-
-/* Container for the form */
-form {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
+/* Container for login and register */
+.auth-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 30px;
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
-
-form h2 {
+.auth-container h2 {
+  color: #333;
   font-size: 1.8rem;
   margin-bottom: 20px;
-  color: #333;
 }
 
-
-form label {
-  display: block;
-  font-size: 1rem;
-  margin-bottom: 5px;
-  color: #555;
+.auth-form {
+  display: flex;
+  flex-direction: column;
 }
 
-
-form input[type="text"],
-form textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  box-sizing: border-box;
+.form-group {
   margin-bottom: 15px;
 }
 
+label {
+  display: block;
+  color: #555;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  text-align: left;
+}
 
-form button[type="submit"] {
-  background-color: #282c34;
-  color: white;
-  padding: 10px 20px;
-  border: none;
+input[type="text"],
+input[type="password"] {
+  width: 96%;
+  padding: 10px;
+  border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
+}
+
+input::placeholder {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.auth-button {
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 1rem;
   transition: background-color 0.3s;
 }
 
-form button[type="submit"]:hover {
-  background-color: grey;
-}
-
-.document-list-container {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-h2 {
-  text-align: center;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-li:last-child {
-  border-bottom: none;
-}
-
-.document-title-link {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.document-title-link:hover {
-  text-decoration: underline;
-}
-
-.input-container {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-input[type="text"] {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: #28a745;
-  color: white;
-  font-size: 16px;
-}
-
-button:hover {
+.auth-button:hover {
   background-color: #218838;
 }
 
-.delete-all-button {
-  background-color: #dc3545;
+.error-message {
+  color: #dc3545;
+  font-size: 0.9rem;
 }
 
-.delete-all-button:hover {
-  background-color: #c82333;
+.success-message {
+  color: #28a745;
+  font-size: 0.9rem;
+  margin-top: 10px;
 }

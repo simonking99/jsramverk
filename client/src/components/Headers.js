@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom'; // För navigering
-import axios from 'axios';
 
 const Header = ({ isAuthenticated, setIsAuthenticated }) => {
   const navigate = useNavigate();
@@ -22,14 +21,13 @@ const Header = ({ isAuthenticated, setIsAuthenticated }) => {
       <nav>
         {/* Visa olika knappar beroende på om användaren är inloggad */}
         {isAuthenticated ? (
-          <>
-            <Link to="/documents" style={{ marginRight: '10px' }}>Hem</Link> {/* Länk till hem */}
-            <button onClick={handleLogout}>Logga ut</button>
-          </>
+        <>
+          <button onClick={handleLogout} className="logout-button">Sign out</button>
+        </>
         ) : (
           <>
-            <Link to="/login" style={{ marginRight: '10px' }}>Logga in</Link>
-            <Link to="/register">Registrera</Link> {/* Länk till registreringssidan */}
+            <Link to="/login" className="nav-link">Logga in</Link>
+            <Link to="/register" className="nav-link">Registrera</Link>
           </>
         )}
       </nav>

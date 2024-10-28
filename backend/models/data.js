@@ -30,12 +30,14 @@ const data = {
         const db = getDb();
         const targetUser = await db.collection('users').findOne({ email: targetEmail });
         if (!targetUser) throw new Error('Användare hittades inte');
-
+    
+        // Lägg till användaren i sharedWith med skrivbehörighet
         return db.collection('documents').updateOne(
             { _id: new ObjectId(docId), owner: new ObjectId(userId) },
-            { $addToSet: { sharedWith: targetUser._id } }
+            { $addToSet: { sharedWith: { userId: targetUser._id, permission: 'write' } } }
         );
     }
+      
 };
 
 export default data;

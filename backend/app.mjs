@@ -4,11 +4,13 @@ import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import cors from 'cors';
 import { connectToMongo, getDb } from './data/db/database.mjs';
-import documents from "./src/doc/docs.mjs";
+import documents from './src/doc/docs.mjs';
 import authenticate from './middleware/authenticate.mjs';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import sgMail from '@sendgrid/mail';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -22,17 +24,63 @@ app.use(morgan('combined'));
 
 connectToMongo().catch(console.error);
 
+console.log("Loaded SendGrid API Key:", process.env.SENDGRID_API_KEY ? "Yes" : "No");
+
+
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+        credentials: true
+    },
+    transports: ['websocket'],
+});
+
+// Hantera socket.io anslutning
+io.on('connection', (socket) => {
+    console.log('En användare anslöt:', socket.id);
+
+    socket.on('create', (documentId) => {
+        console.log(`Användaren gick med i dokumentrummet: ${documentId}`);
+        socket.join(documentId);
+        
+        const clientsInRoom = io.sockets.adapter.rooms.get(documentId)?.size || 0;
+        console.log(`Antal användare i rummet ${documentId}: ${clientsInRoom}`);
+    });
+
+    socket.on('doc', (data) => {
+        const { _id, title, html } = data;
+        socket.to(_id).emit('doc', { _id, title, html });
+        console.log(`Sent document update to room ${_id}`);
+    });
+
+    socket.on('newComment', (commentData) => {
+        const { documentId, line, text, user } = commentData;
+        console.log(`Received new comment for document ${documentId}: "${text}" on line ${line} by ${user}`);
+
+        console.log(`Sending comment to room: ${documentId}`);
+        socket.to(documentId).emit('newComment', commentData);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Användaren kopplade från:', socket.id);
+    });
+
+    socket.on('error', (err) => {
+        console.log('Socket-fel:', err);
+    });
+});
+
 app.get('/documents', authenticate, async (req, res) => {
     const userId = req.user.id;
     console.log(req.user);
 
     try {
         const userDocs = await documents.getAllByUser(userId);
-
         const sharedDocs = await documents.getAllShared(userId);
-
         const allDocs = [...userDocs, ...sharedDocs];
-
         res.json(allDocs);
     } catch (error) {
         console.error('Fel vid hämtning av dokument:', error);
@@ -107,10 +155,12 @@ app.post('/invite', authenticate, async (req, res) => {
         res.json({ success: true, message: 'Inbjudan skickad' });
     } catch (error) {
         console.error('Fel vid skickande av inbjudan:', error);
-        res.status(500).json({ success: false, message: 'Fel vid skickande av inbjudan' });
+        if (error.response) {
+            console.error('SendGrid Response:', error.response.status, error.response.body);
+        }
+        res.status(500).json({ success: false, message: 'Fel vid skickande av inbjudan', error: error.response?.body });
     }
 });
-
 
 
 app.post('/share', authenticate, async (req, res) => {
@@ -137,21 +187,11 @@ app.get('/document/:id', authenticate, async (req, res) => {
     const id = req.params.id;
     const doc = await documents.getOne(id);
 
-    if (doc.userId !== req.user.id) {
-        return res.status(403).json({ error: 'Du har inte åtkomst till detta dokument' });
-    }
-
     res.json(doc);
 });
 
 app.put('/updateone/:id', authenticate, async (req, res) => {
     const id = req.params.id;
-    const doc = await documents.getOne(id);
-
-    if (doc.userId !== req.user.id) {
-        return res.status(403).json({ error: 'Du har inte åtkomst till att uppdatera detta dokument' });
-    }
-
     const result = await documents.updateOne(id, req.body);
     res.json({ success: true, result });
 });
@@ -162,6 +202,6 @@ app.delete('/deleteAll', authenticate, async (req, res) => {
     res.json({ success: true, deletedCount: result.deletedCount });
 });
 
-app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
+httpServer.listen(port, () => {
+    console.log(`Appen lyssnar på port ${port}`);
 });
