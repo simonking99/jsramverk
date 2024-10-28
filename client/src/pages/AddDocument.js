@@ -7,6 +7,7 @@ const AddDocument = ({ onAddDocument }) => {
     const [content, setContent] = useState('');
     const navigate = useNavigate();
 
+    // Funktion för att hantera formulärets inskickning
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -22,6 +23,7 @@ const AddDocument = ({ onAddDocument }) => {
         }
     };
 
+    // Funktion för att navigera tillbaka till dokumentlistan
     const handleBack = () => {
         onAddDocument();
         navigate('/documents');

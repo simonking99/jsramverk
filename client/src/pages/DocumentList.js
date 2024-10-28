@@ -3,9 +3,10 @@ import axios from 'axios';
 
 const DocumentList = ({ onUpdate, onAddDocument }) => {
     const [documents, setDocuments] = useState([]);
-    const [inputId, setInputId] = useState(''); // State för att spara dokumentets ID
-    const [userId, setUserId] = useState(''); // State för att spara användarens ID
+    const [inputId, setInputId] = useState('');
+    const [userId, setUserId] = useState('');
 
+    // Hämtar dokumenten vid laddning av komponenten
     useEffect(() => {
         const fetchDocuments = async () => {
             try {
@@ -27,6 +28,7 @@ const DocumentList = ({ onUpdate, onAddDocument }) => {
         onUpdate(doc);
     };
 
+    // Raderar alla dokument från databasen
     const handleDeleteAll = async () => {
         try {
             await axios.delete('http://localhost:3001/deleteAll', {
@@ -41,6 +43,7 @@ const DocumentList = ({ onUpdate, onAddDocument }) => {
         }
     };
 
+    // Delar ett specifikt dokument med en användare baserat på dokument-ID och användarnamn
     const handleShareDocument = async () => {
         try {
             await axios.post('http://localhost:3001/share', {

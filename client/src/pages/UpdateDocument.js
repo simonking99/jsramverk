@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import Editor from '@monaco-editor/react';
 
+// Skapa en WebSocket-anslutning med Socket.IO
 const socket = io('http://localhost:3001', {
     transports: ['websocket'],
     path: '/socket.io',
@@ -21,38 +22,43 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
     const [isCodeMode, setIsCodeMode] = useState(document.isCode || false);
     const navigate = useNavigate();
 
+    // Anslut till dokumentet via Socket.IO när komponenten laddas
     useEffect(() => {
         socket.emit('create', document._id);
+        // Lyssna på uppdateringar av dokumentet
         socket.on('doc', (data) => {
             if (data._id === document._id) {
                 setTitle(data.title);
                 setContent(data.html);
             }
         });
-
+        // Lyssna på uppdateringar av nya kommentarer
         socket.on('newComment', (commentData) => {
             if (commentData.documentId === document._id) {
                 setComments((prevComments) => [...prevComments, commentData]);
             }
         });
-
+        // Stäng av Socket.IO-lyssnare när komponenten stängs
         return () => {
             socket.off('doc');
             socket.off('newComment');
         };
     }, [document._id]);
 
+    // Hantera ändringar av titlen och skicka den till servern via WebSocket
     const handleTitleChange = (e) => {
         const newTitle = e.target.value;
         setTitle(newTitle);
         socket.emit('doc', { _id: document._id, title: newTitle, html: content });
     };
 
+    // Hantera ändring av innehållet och skicka uppdatering till servern via WebSocket
     const handleContentChange = (value) => {
         setContent(value || '');
         socket.emit('doc', { _id: document._id, title, html: value });
     };
 
+    // Lägg till en kommentar för varje befintligt radnummer
     const handleAddComment = () => {
         if (newComment && selectedLine !== null) {
             const commentData = { 
@@ -67,6 +73,7 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
         }
     };
 
+    // Skicka uppdaterat dokument till servern
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
@@ -80,10 +87,13 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
         }
     };
 
+    // Exekvera JavaScript-koden
     const handleExecuteCode = async () => {
+        // Omvandlar content till en base64-kodad sträng
         const encodedCode = btoa(content);
         const data = { code: encodedCode };
 
+        // Skickar ett POST request till url med en base64-kodad sträng
         try {
             const response = await fetch("https://execjs.emilfolino.se/code", {
                 body: JSON.stringify(data),
@@ -99,8 +109,10 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
         }
     };
 
+    // Växla mellan kod och textläge
     const handleToggleCodeMode = () => setIsCodeMode(!isCodeMode);
 
+    // Dela dokumentet med en specifik användare
     const handleShare = async () => {
         try {
             await axios.post('http://localhost:3001/share', {
@@ -117,6 +129,7 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
         }
     };
 
+    // Skicka inbjudan till en användare baserat på e-postadress
     const handleInvite = async () => {
         try {
             await axios.post('http://localhost:3001/invite', {
@@ -133,6 +146,7 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
         }
     };
 
+    // Navigera tillbaka till dokumentlistan
     const handleBack = () => {
         onUpdateDocument();
         navigate('/documents');
