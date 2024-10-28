@@ -11,6 +11,8 @@ import bcrypt from 'bcrypt';
 import sgMail from '@sendgrid/mail';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { graphqlHTTP } from 'express-graphql';
+import { schema, root } from './graphql/docsgraph.js';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -23,12 +25,18 @@ app.use(bodyParser.json());
 app.use(morgan('combined'));
 
 connectToMongo().catch(console.error);
-
 console.log("Loaded SendGrid API Key:", process.env.SENDGRID_API_KEY ? "Yes" : "No");
 
+const visual = true;
+
+// Använd GraphQL
+app.use('/graphql', graphqlHTTP({
+    schema: schema,
+    rootValue: root,
+    graphiql: visual, // Aktivera GraphiQL för enklare testing
+}));
 
 const httpServer = createServer(app);
-
 const io = new Server(httpServer, {
     cors: {
         origin: "http://localhost:3000",
@@ -59,8 +67,6 @@ io.on('connection', (socket) => {
     socket.on('newComment', (commentData) => {
         const { documentId, line, text, user } = commentData;
         console.log(`Received new comment for document ${documentId}: "${text}" on line ${line} by ${user}`);
-
-        console.log(`Sending comment to room: ${documentId}`);
         socket.to(documentId).emit('newComment', commentData);
     });
 
@@ -71,6 +77,22 @@ io.on('connection', (socket) => {
     socket.on('error', (err) => {
         console.log('Socket-fel:', err);
     });
+});
+
+// REST API endpoints
+app.get('/documents', authenticate, async (req, res) => {
+    const userId = req.user.id;
+    console.log(req.user);
+
+    try {
+        const userDocs = await documents.getAllByUser(userId);
+        const sharedDocs = await documents.getAllShared(userId);
+        const allDocs = [...userDocs, ...sharedDocs];
+        res.json(allDocs);
+    } catch (error) {
+        console.error('Fel vid hämtning av dokument:', error);
+        res.status(500).json({ message: 'Fel vid hämtning av dokument' });
+    }
 });
 
 app.get('/documents', authenticate, async (req, res) => {
@@ -104,7 +126,7 @@ app.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ success: true, token });
+    res.json({ success: true, token, userId: user._id });
 });
 
 app.post('/register', async (req, res) => {
@@ -162,7 +184,6 @@ app.post('/invite', authenticate, async (req, res) => {
     }
 });
 
-
 app.post('/share', authenticate, async (req, res) => {
     const { documentId, username } = req.body;
 
@@ -203,5 +224,5 @@ app.delete('/deleteAll', authenticate, async (req, res) => {
 });
 
 httpServer.listen(port, () => {
-    console.log(`Appen lyssnar på port ${port}`);
+    console.log(`🚀 Server ready at http://localhost:${port}/graphql`);
 });

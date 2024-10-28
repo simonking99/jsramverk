@@ -55,7 +55,12 @@ const docs = {
             return document._id.toString();
         }
         throw new Error('Dokumentet hittades inte');
-    }
+    },
+
+    getAllDocuments: async () => {
+        const db = getDb();
+        return await db.collection('documents').find({}).toArray();
+    },
 
 };
 
