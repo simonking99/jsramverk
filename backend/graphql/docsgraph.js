@@ -10,6 +10,7 @@ const schema = buildSchema(`
         content: String
         isCode: Boolean
         comments: [Comment]
+        sharedWith: [ID]  # Add sharedWith field if needed
     }
 
     type Comment {
@@ -20,17 +21,25 @@ const schema = buildSchema(`
 
     type Query {
         getAllByUser(userId: ID!): [Document]
+        getSharedWithUser(userId: ID!): [Document]
         getOne(id: ID!): Document
-        getAllDocuments: [Document]  # Ny query för att hämta alla dokument
+        getAllDocuments: [Document]
+        getAllDocumentsForUser(userId: ID!): [Document]
     }
 `);
 
 // Definiera resolvers
 const root = {
     getAllByUser: async ({ userId }) => await docs.getAllByUser(userId),
+    getSharedWithUser: async ({ userId }) => await docs.getAllShared(userId),  // New resolver
     getOne: async ({ id }) => await docs.getOne(id),
     getAllDocuments: async () => {
         return await docs.getAllDocuments();
+    },
+    getAllDocumentsForUser: async ({ userId }) => {
+        const userDocuments = await docs.getAllByUser(userId);
+        const sharedDocuments = await docs.getAllShared(userId);
+        return [...userDocuments, ...sharedDocuments];  // Combine both lists
     }
 };
 
