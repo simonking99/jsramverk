@@ -26,8 +26,8 @@ const Header = ({ isAuthenticated, setIsAuthenticated }) => {
         </>
         ) : (
           <>
-            <Link to="/login" className="nav-link">Logga in</Link>
-            <Link to="/register" className="nav-link">Registrera</Link>
+            <Link to="/login" className="nav-link">Login</Link>
+            <Link to="/register" className="nav-link">Register</Link>
           </>
         )}
       </nav>

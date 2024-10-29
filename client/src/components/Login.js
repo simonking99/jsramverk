@@ -1,4 +1,3 @@
-// Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -26,27 +25,29 @@ const Login = ({ setIsAuthenticated }) => {
 
   return (
     <div>
-      <h2>Logga in</h2>
+      <h2>Login form</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleLogin}>
         <div>
-          <label>Användarnamn:</label>
+          <label htmlFor="email">Email:</label>
           <input
+            id="email"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
         <div>
-          <label>Lösenord:</label>
+          <label htmlFor="password">Password:</label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <br></br>
-        <button type="submit">Logga in</button>
+        <button type="submit">Login</button>
       </form>
     </div>
   );

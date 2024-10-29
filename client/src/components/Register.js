@@ -19,11 +19,12 @@ const Register = () => {
 
     return (
         <div>
-            <h2>Registrera dig</h2>
+            <h2>Register form</h2>
             <form onSubmit={handleRegister}>
                 <div>
-                    <label>Användarnamn:</label>
+                    <label htmlFor="email">Email:</label>
                     <input
+                        id="email"
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -31,16 +32,17 @@ const Register = () => {
                     />
                 </div>
                 <div>
-                    <label>Lösenord:</label>
+                    <label htmlFor="password">Password:</label>
                     <input
+                        id="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
                 </div>
-                <br></br>
-                <button type="submit">Registrera</button>
+                <br />
+                <button type="submit">Register</button>
             </form>
             {message && <p>{message}</p>}
         </div>
