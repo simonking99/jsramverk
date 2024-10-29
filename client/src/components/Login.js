@@ -15,6 +15,7 @@ const Login = ({ setIsAuthenticated }) => {
         password,
       });
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userId', response.data.userId);  // Spara userId
       setIsAuthenticated(true);
       window.location.href = '/';
     } catch (err) {
