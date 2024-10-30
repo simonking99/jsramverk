@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 // Definiera API-URL:en som en konstant
 const API_URL = 'https://jsramverk-v2x-ane2cxfnc8dddcgf.swedencentral-01.azurewebsites.net';
@@ -8,6 +10,8 @@ const Login = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // Använd useNavigate för omdirigering
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,7 +23,8 @@ const Login = ({ setIsAuthenticated }) => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userId', response.data.userId);  // Spara userId
       setIsAuthenticated(true);
-      window.location.href = '/';
+      navigate('/documents'); // Använd navigate för att omdirigera efter inloggning
+
     } catch (err) {
       setError('Inloggning misslyckades. Kontrollera användarnamn och lösenord.');
       console.error('Fel vid inloggning:', err);

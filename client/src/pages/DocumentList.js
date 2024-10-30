@@ -8,42 +8,44 @@ const DocumentList = ({ onUpdate, onAddDocument }) => {
 
     const API_URL = 'https://jsramverk-v2x-ane2cxfnc8dddcgf.swedencentral-01.azurewebsites.net';
 
-    useEffect(() => {
-        const fetchDocuments = async () => {
-            const userId = localStorage.getItem('userId'); // Hämta userId från localStorage
-            if (!userId) {
-                console.error('Användar-ID saknas.');
-                return;
-            }
+    // Funktion för att hämta dokument från backend
+    const fetchDocuments = async () => {
+        const userId = localStorage.getItem('userId'); // Hämta userId från localStorage
+        if (!userId) {
+            console.error('Användar-ID saknas.');
+            return;
+        }
 
-            try {
-                const response = await fetch(`${API_URL}/graphql`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Lägg till auth-token
-                    },
-                    body: JSON.stringify({
-                        query: `
-                            query {
-                                getAllDocumentsForUser(userId: "${userId}") {
-                                    _id
-                                    title
-                                    userId
-                                    content
-                                }
+        try {
+            const response = await fetch(`${API_URL}/graphql`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // Lägg till auth-token
+                },
+                body: JSON.stringify({
+                    query: `
+                        query {
+                            getAllDocumentsForUser(userId: "${userId}") {
+                                _id
+                                title
+                                userId
+                                content
                             }
-                        `
-                    }),
-                });
-                const result = await response.json();
-                setDocuments(result.data.getAllDocumentsForUser);
-            } catch (error) {
-                console.error('Det uppstod ett fel vid hämtning av dokument!', error);
-            }
-        };
+                        }
+                    `
+                }),
+            });
+            const result = await response.json();
+            setDocuments(result.data.getAllDocumentsForUser);
+        } catch (error) {
+            console.error('Det uppstod ett fel vid hämtning av dokument!', error);
+        }
+    };
 
+    // Hämta dokument när komponenten laddas
+    useEffect(() => {
         fetchDocuments();
     }, []);
 
@@ -89,6 +91,9 @@ const DocumentList = ({ onUpdate, onAddDocument }) => {
     return (
         <div className="document-list-container">
             <h2>All available documents</h2>
+            {/* Uppdatera-knapp för att hämta de senaste dokumenten */}
+            <button onClick={fetchDocuments} className="btn refresh">Refresh Documents</button>
+            
             <ul className="document-list">
                 {Array.isArray(documents) && documents.length > 0 ? (
                     documents.map((doc) => (
