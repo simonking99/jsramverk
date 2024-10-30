@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "node app.mjs",
     "test": "nyc --reporter=html --reporter=text mocha --require @babel/register 'test/**/*.{mjs,js}' --exit --timeout 15000",
     "clean": "rm -rf node_modules package-lock.json"
   },

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+// Definiera API-URL:en som en konstant
+const API_URL = 'https://jsramverk-v2x-ane2cxfnc8dddcgf.swedencentral-01.azurewebsites.net';
+
 const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -9,7 +12,10 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3001/register', { username, password });
+            const response = await axios.post(`${API_URL}/register`, {  // Använd API_URL här
+                username,
+                password
+            });
             setMessage(response.data.message);
         } catch (error) {
             console.error('Registrering misslyckades:', error);

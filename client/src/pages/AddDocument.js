@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+// Definiera API-URL:en som en konstant
+const API_URL = 'https://jsramverk-v2x-ane2cxfnc8dddcgf.swedencentral-01.azurewebsites.net';
+
 const AddDocument = ({ onAddDocument }) => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -12,7 +15,7 @@ const AddDocument = ({ onAddDocument }) => {
         e.preventDefault();
         try {
             const documentData = { title, content };
-            await axios.post('http://localhost:3001/addone', documentData, {
+            await axios.post(`${API_URL}/addone`, documentData, {  // Använd API_URL-variabeln här
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }

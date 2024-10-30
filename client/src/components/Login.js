@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+// Definiera API-URL:en som en konstant
+const API_URL = 'https://jsramverk-v2x-ane2cxfnc8dddcgf.swedencentral-01.azurewebsites.net';
+
 const Login = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -9,7 +12,7 @@ const Login = ({ setIsAuthenticated }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/login', {
+      const response = await axios.post(`${API_URL}/login`, {  // Använd API_URL här
         username,
         password,
       });
@@ -46,7 +49,7 @@ const Login = ({ setIsAuthenticated }) => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <br></br>
+        <br />
         <button type="submit">Login</button>
       </form>
     </div>

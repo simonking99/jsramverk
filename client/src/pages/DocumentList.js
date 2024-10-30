@@ -6,6 +6,8 @@ const DocumentList = ({ onUpdate, onAddDocument }) => {
     const [inputId, setInputId] = useState('');
     const [userId, setUserId] = useState('');
 
+    const API_URL = 'https://jsramverk-v2x-ane2cxfnc8dddcgf.swedencentral-01.azurewebsites.net';
+
     useEffect(() => {
         const fetchDocuments = async () => {
             const userId = localStorage.getItem('userId'); // Hämta userId från localStorage
@@ -15,7 +17,7 @@ const DocumentList = ({ onUpdate, onAddDocument }) => {
             }
 
             try {
-                const response = await fetch('http://localhost:3001/graphql', {
+                const response = await fetch(`${API_URL}/graphql`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -52,7 +54,7 @@ const DocumentList = ({ onUpdate, onAddDocument }) => {
     // Raderar alla dokument från databasen
     const handleDeleteAll = async () => {
         try {
-            await axios.delete('http://localhost:3001/deleteAll', {
+            await axios.delete(`${API_URL}/deleteAll`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
@@ -67,7 +69,7 @@ const DocumentList = ({ onUpdate, onAddDocument }) => {
     // Delar ett specifikt dokument med en användare baserat på dokument-ID och användarnamn
     const handleShareDocument = async () => {
         try {
-            await axios.post('http://localhost:3001/share', {
+            await axios.post(`${API_URL}/share`, {
                 documentId: inputId,
                 username: userId
             }, {

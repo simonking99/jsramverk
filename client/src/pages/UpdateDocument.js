@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import Editor from '@monaco-editor/react';
 
 // Skapa en WebSocket-anslutning med Socket.IO
-const socket = io('http://localhost:3001', {
+const socket = io('https://jsramverk-v2x-ane2cxfnc8dddcgf.swedencentral-01.azurewebsites.net', {
     transports: ['websocket'],
     path: '/socket.io',
 });
@@ -78,7 +78,7 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
         e.preventDefault();
         try {
             const documentData = { title, content, comments, isCode: isCodeMode };
-            await axios.put(`http://localhost:3001/updateone/${document._id}`, documentData, {
+            await axios.put(`https://jsramverk-v2x-ane2cxfnc8dddcgf.swedencentral-01.azurewebsites.net/updateone/${document._id}`, documentData, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             onUpdateDocument();
@@ -115,7 +115,7 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
     // Dela dokumentet med en specifik användare
     const handleShare = async () => {
         try {
-            await axios.post('http://localhost:3001/share', {
+            await axios.post('https://jsramverk-v2x-ane2cxfnc8dddcgf.swedencentral-01.azurewebsites.net/share', {
                 documentId: document._id,
                 username: username
             }, {
@@ -132,7 +132,7 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
     // Skicka inbjudan till en användare baserat på e-postadress
     const handleInvite = async () => {
         try {
-            await axios.post('http://localhost:3001/invite', {
+            await axios.post('https://jsramverk-v2x-ane2cxfnc8dddcgf.swedencentral-01.azurewebsites.net/invite', {
                 recipientEmail: recipientEmail,
                 documentId: document._id
             }, {
@@ -173,36 +173,36 @@ const UpdateDocument = ({ document, onUpdateDocument }) => {
             </div>
 
             <div className="sidebar">
-            <div className="comments-section">
-                <h3>Comments</h3>
-                {content.split('\n').map((_, index) => (
-                    <div key={index} className="comment-row">
-                        <div className="comment-row-header">
-                            <span>Row {index + 1}:</span>
-                            <button onClick={() => setSelectedLine(index)} className="btn-add-comment">Add Comment</button>
-                        <div className="comments-list">
-                            {comments
-                                .filter(comment => comment.line === index)
-                                .map((comment, idx) => (
-                                    <div key={idx} className="comment-display">
-                                        {comment.user}: {comment.text}
-                                    </div>
-                                ))}
-                                 </div>
+                <div className="comments-section">
+                    <h3>Comments</h3>
+                    {content.split('\n').map((_, index) => (
+                        <div key={index} className="comment-row">
+                            <div className="comment-row-header">
+                                <span>Row {index + 1}:</span>
+                                <button onClick={() => setSelectedLine(index)} className="btn-add-comment">Add Comment</button>
+                                <div className="comments-list">
+                                    {comments
+                                        .filter(comment => comment.line === index)
+                                        .map((comment, idx) => (
+                                            <div key={idx} className="comment-display">
+                                                {comment.user}: {comment.text}
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                ))}
-                {selectedLine !== null && (
-                    <div className="new-comment">
-                        <input
-                            value={newComment}
-                            onChange={e => setNewComment(e.target.value)}
-                            placeholder="Enter your comment"
-                        />
-                        <button onClick={handleAddComment} className="btn-submit-comment">Submit Comment</button>
-                    </div>
-                )}
-            </div>
+                    ))}
+                    {selectedLine !== null && (
+                        <div className="new-comment">
+                            <input
+                                value={newComment}
+                                onChange={e => setNewComment(e.target.value)}
+                                placeholder="Enter your comment"
+                            />
+                            <button onClick={handleAddComment} className="btn-submit-comment">Submit Comment</button>
+                        </div>
+                    )}
+                </div>
 
                 <div className="share-invite-section">
                     <h3>Share & Invite Options</h3>

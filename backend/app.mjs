@@ -33,7 +33,7 @@ const visual = true;
 app.use('/graphql', graphqlHTTP({
     schema: schema,
     rootValue: root,
-    graphiql: visual, // Aktivera GraphiQL för enklare testing
+    graphiql: visual,
 }));
 
 const httpServer = createServer(app);

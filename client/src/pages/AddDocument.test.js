@@ -7,6 +7,9 @@ import AddDocument from './AddDocument';
 jest.mock('axios');
 global.fetch = jest.fn();
 
+// Definiera API-URL:en som en konstant
+const API_URL = 'https://jsramverk-v2x-ane2cxfnc8dddcgf.swedencentral-01.azurewebsites.net';
+
 test('skapar ett dokument och verifierar dess existens via GraphQL fetch', async () => {
     const onAddDocument = jest.fn();
     const newDocument = { id: 1, title: 'Test Title', content: 'Test Content' };
@@ -38,7 +41,7 @@ test('skapar ett dokument och verifierar dess existens via GraphQL fetch', async
     // Vänta på formulärinskickning
     await waitFor(() => {
         expect(axios.post).toHaveBeenCalledWith(
-            'http://localhost:3001/addone',
+            `${API_URL}/addone`,  // Använd API_URL-variabeln här
             { title: 'Test Title', content: 'Test Content' },
             expect.objectContaining({
                 headers: expect.objectContaining({
@@ -50,7 +53,7 @@ test('skapar ett dokument och verifierar dess existens via GraphQL fetch', async
     });
 
     // Hämta alla dokument med GraphQL-fråga
-    const response = await fetch('http://localhost:3001/graphql', {
+    const response = await fetch(`${API_URL}/graphql`, {  // Använd API_URL-variabeln här
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -70,5 +73,5 @@ test('skapar ett dokument och verifierar dess existens via GraphQL fetch', async
 
     // Kontrollera att det nya dokumentet finns med i listan
     expect(documents).toContainEqual(newDocument);
-    console.log(documents)
+    console.log(documents);
 });
